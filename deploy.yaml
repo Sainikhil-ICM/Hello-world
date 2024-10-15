@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: valueplus
+  labels:
+    role: api
+    env: uat
+spec:
+  replicas: 1  # Set replicas to 1 due to single node
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      role: api  # Change from incred-api to api to match pod labels
+  template:
+    metadata:
+      labels:
+        role: api  # Change from incred-api to api to match selector
+    spec:
+      serviceAccountName: ecr-access-sa
+      containers:
+      - name: api
+        image: 557690592390.dkr.ecr.ap-south-1.amazonaws.com/hello-world:3
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
